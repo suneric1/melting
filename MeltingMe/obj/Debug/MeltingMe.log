@@ -1,9 +1,0 @@
-﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(936,5): warning MSB8027: Two or more files with the name of NetworkingUtils.cpp will produce outputs to the same location. This can lead to an incorrect build result.  The files involved are ..\..\..\..\..\Downloads\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src\ip\posix\NetworkingUtils.cpp, ..\..\..\..\..\Downloads\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src\ip\win32\NetworkingUtils.cpp.
-C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(936,5): warning MSB8027: Two or more files with the name of UdpSocket.cpp will produce outputs to the same location. This can lead to an incorrect build result.  The files involved are ..\..\..\..\..\Downloads\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src\ip\posix\UdpSocket.cpp, ..\..\..\..\..\Downloads\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src\ip\win32\UdpSocket.cpp.
-  Skeleton.cpp
-  ofApp.cpp
-c:\users\suner\documents\visual studio 2015\projects\meltingme\meltingme\src\skeleton.cpp(131): warning C4715: 'Skeleton::getColor': not all control paths return a value
-  MeltingMe.vcxproj -> c:\Users\suner\documents\visual studio 2015\Projects\MeltingMe\MeltingMe\bin\MeltingMe_debug.exe
-  MeltingMe.vcxproj -> bin\MeltingMe_debug.pdb (Full PDB)
-  
-  	                   9	C:\Users\suner\Downloads\of_v0.9.8_vs_release\export\vs\Win32\
