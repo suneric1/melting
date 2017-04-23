@@ -173,34 +173,39 @@ void ofApp::update() {
 void ofApp::detectTouching() {
 	for (auto it = skeletons.begin(); it != skeletons.end(); it++) {
 		it->second->restoring = false;
+		it->second->meltingSpeed = ofGetLastFrameTime() * 0.1f;
+		it->second->hasSameColor = false;
+		for (auto jt = skeletons.begin(); jt != skeletons.end(); jt++) {
+			if (it!=jt && it->second->color == jt->second->color) {
+				it->second->hasSameColor = true;
+			}
+		}
 	}
 
 	for (auto it = skeletons.begin(); it != skeletons.end(); it++) {
-		it->second->meltingSpeed = ofGetLastFrameTime() * 0.1f;
 		touchingThreshold = it->second->scale / touchingThresholdBase;
-		if (it != skeletons.begin()) {
-			//            ofLog()<<it->second->color<<" "<<std::prev(it,1)->second->color;
-			if (it->second->getJoint("HandLeft")->pos.distance(std::prev(it, 1)->second->getJoint("HandLeft")->pos) < touchingThreshold
-				|| it->second->getJoint("HandRight")->pos.distance(std::prev(it, 1)->second->getJoint("HandRight")->pos) < touchingThreshold
-				|| it->second->getJoint("HandLeft")->pos.distance(std::prev(it, 1)->second->getJoint("HandRight")->pos) < touchingThreshold
-				|| it->second->getJoint("HandRight")->pos.distance(std::prev(it, 1)->second->getJoint("HandLeft")->pos) < touchingThreshold) {
-				if (it->second->color == std::prev(it, 1)->second->color) {
-					it->second->restoring = true;
-					std::prev(it, 1)->second->restoring = true;
-				}
-				else {
-					it->second->meltingSpeed = ofGetLastFrameTime() * 0.1f;
-					std::prev(it, 1)->second->meltingSpeed = ofGetLastFrameTime() * 0.1f;
+		for (auto jt = skeletons.begin(); jt != skeletons.end(); jt++) {
+			if (it != jt) {
+				if (it->second->getJoint("HandLeft")->pos.distance(jt->second->getJoint("HandLeft")->pos) < touchingThreshold
+					|| it->second->getJoint("HandRight")->pos.distance(jt->second->getJoint("HandRight")->pos) < touchingThreshold
+					|| it->second->getJoint("HandLeft")->pos.distance(jt->second->getJoint("HandRight")->pos) < touchingThreshold
+					|| it->second->getJoint("HandRight")->pos.distance(jt->second->getJoint("HandLeft")->pos) < touchingThreshold) {
+					if (it->second->color == jt->second->color) {
+						it->second->restoring = true;
+						jt->second->restoring = true;
+					}
+					else {
+						it->second->meltingSpeed = ofGetLastFrameTime() * 0.4f;
+						jt->second->meltingSpeed = ofGetLastFrameTime() * 0.4f;
+					}
 				}
 			}
 		}
-		if(selfRestore){
-			if (it->second->getJoint("HandRight")->pos.distance(it->second->getJoint("HandLeft")->pos) < touchingThreshold) {
+		if (it->second->getJoint("HandRight")->pos.distance(it->second->getJoint("HandLeft")->pos) < touchingThreshold) {
+			if(it->second->hasSameColor)
+				it->second->meltingSpeed = ofGetLastFrameTime() * 0.4f;
+			else
 				it->second->restoring = true;
-			}
-			else {
-				it->second->meltingSpeed = ofGetLastFrameTime() * 0.1f;
-			}
 		}
 	}
 }

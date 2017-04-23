@@ -77,6 +77,7 @@ public:
 	float meltingSpeed = 0.002f;
 	float restoringSpeed = 0.01f;
 	float scale = 0;
+	bool hasSameColor = false;
 
 	void addOrUpdateJoint(string jointName, ofVec3f position, bool seen);
 
