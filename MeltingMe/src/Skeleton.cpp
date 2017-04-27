@@ -12,7 +12,7 @@
 void Skeleton::build() {
 	color = (Color)(int)ofRandom(0, 4);
 	for (int i = 0; i < TOTAL_JOINTS; i++) {
-		addOrUpdateJoint(getNameForIndex((JointIndex)i), ofVec3f(), false);
+		addOrUpdateJoint(getNameForIndex((JointIndex)i), ofVec3f(), false, 1, 0, 0);
 	}
 }
 
@@ -103,13 +103,13 @@ void Skeleton::draw() {
 		}
 	}
 
-	    /*for(auto& line: sections){
-	        line.second.line.draw();
-	    }
-	    
-	    for( auto& joint : joints ) {
-	        ofDrawSphere(ofVec2f(joint.second->pos), 10 );
-	    }*/
+	/*for(auto& line: sections){
+	line.second.line.draw();
+	}
+
+	for( auto& joint : joints ) {
+	ofDrawSphere(ofVec2f(joint.second->pos), 10 );
+	}*/
 }
 
 ofColor Skeleton::getColor() {
@@ -223,7 +223,7 @@ string Skeleton::getNameForIndex(JointIndex aindex) {
 
 
 //--------------------------------------------------------------
-void Skeleton::addOrUpdateJoint(string jointName, ofVec3f position, bool seen) {
+void Skeleton::addOrUpdateJoint(string jointName, ofVec3f position, bool seen, float imageScale, int offsetX, int offsetY) {
 
 	if (joints.count(jointName) == 0) {
 		//        ofLogError() << " all joints should be made at startup! jointName = " << jointName <<  endl;
@@ -232,8 +232,8 @@ void Skeleton::addOrUpdateJoint(string jointName, ofVec3f position, bool seen) {
 		joints[jointName]->name = jointName;
 	}
 
-	scale = ofMap(position.z, 0.f, 4.f, 1000.f, 200.f);
-	joints[jointName]->pos = position * scale + ofVec3f(ofGetWidth() / 2, ofGetHeight() * 3 / 5, 0);
+	scale = ofMap(position.z, 0.f, 4.f, 1000.f, 200.f) * imageScale;
+	joints[jointName]->pos = position * scale + ofVec3f(ofGetWidth() / 2 + offsetX, ofGetHeight() * 3 / 5 + offsetY, 0);
 	joints[jointName]->bSeen = seen;
 	joints[jointName]->bNewThisFrame = true;
 
@@ -242,4 +242,3 @@ void Skeleton::addOrUpdateJoint(string jointName, ofVec3f position, bool seen) {
 	}
 	lastTimeSeen = ofGetElapsedTimef();
 }
-

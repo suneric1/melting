@@ -6,12 +6,10 @@ Values:
 - float:  positionY
 - float:  positionZ
 - string: trackingState (Tracked, NotTracked or Inferred)
-
 Address: /bodies/{bodyId}/hands/{handId} (Left or Right)
 Values:
 - string: handState (Open, Closed, NotTracked, Unknown)
 - string: handConfidence (High, Low)
-
 */
 
 //--------------------------------------------------------------
@@ -41,15 +39,23 @@ void ofApp::setup() {
 	gui.setup("Image Processing");
 	gui.setPosition(ofGetWidth() - 10 - gui.getWidth(), 10);
 	gui.add(bDebug.set("Debug", true));
+	gui.add(bUseRecordedData.set("Use Recorded", false));
 	gui.add(selfRestore.set("Self Restore", true));
 	gui.add(dripCount.set("Line Count", 0));
 	gui.add(lastft.set("Delta Time", 0));
 	gui.add(fps.set("FPS", 0));
+	gui.add(numRows.set("Pixels Per Row", 120, 0, 240));
+	gui.add(numCols.set("Pixels Per Column", 90, 0, 180));
+	gui.add(bodyWidth.set("Body Width", 1, 0, 4));
+	gui.add(meltingSpeedBase.set("Melting Speed", 0.1f, 0, 0.5f));
+	gui.add(dropSpeed.set("Drop Speed", 0.8f, 0.5f, 2));
 	gui.add(touchingThresholdBase.set("Touch Thrd", 10, 5, 20));
+	gui.add(imageScale.set("Scale", 1, 0, 4));
+	gui.add(offsetX.set("offsetX", 0, -200, 200));
+	gui.add(offsetY.set("offsetY", 0, -200, 200));
+
 	if (bUseLiveOsc) gui.add(bRecording.set("Recording", false));
 
-	float numRows = 160;
-	float numCols = 90;
 	for (int i = 0; i<numRows; i++) {
 		for (int j = 0; j<numCols; j++) {
 			Pixel p;
@@ -117,7 +123,7 @@ void ofApp::update() {
 
 		}
 	}
-	else {
+	if (bUseRecordedData) {
 		if (playbackData.size() == 0 && playbackDataCached.size()) {
 			playbackData = playbackDataCached;
 			playbackTimeStart = etimef;
@@ -161,7 +167,7 @@ void ofApp::update() {
 	fps = ofGetFrameRate();
 
 	for (int i = 0; i<drips.size(); i++) {
-		drips[i].update();
+		drips[i].update(dropSpeed);
 	}
 
 	ofRemove(drips, shouldRemoveDrip);
@@ -173,10 +179,10 @@ void ofApp::update() {
 void ofApp::detectTouching() {
 	for (auto it = skeletons.begin(); it != skeletons.end(); it++) {
 		it->second->restoring = false;
-		it->second->meltingSpeed = ofGetLastFrameTime() * 0.1f;
+		it->second->meltingSpeed = ofGetLastFrameTime() * meltingSpeedBase;
 		it->second->hasSameColor = false;
 		for (auto jt = skeletons.begin(); jt != skeletons.end(); jt++) {
-			if (it!=jt && it->second->color == jt->second->color) {
+			if (it != jt && it->second->color == jt->second->color) {
 				it->second->hasSameColor = true;
 			}
 		}
@@ -195,15 +201,15 @@ void ofApp::detectTouching() {
 						jt->second->restoring = true;
 					}
 					else {
-						it->second->meltingSpeed = ofGetLastFrameTime() * 0.4f;
-						jt->second->meltingSpeed = ofGetLastFrameTime() * 0.4f;
+						it->second->meltingSpeed = ofGetLastFrameTime() * meltingSpeedBase * 4;
+						jt->second->meltingSpeed = ofGetLastFrameTime() * meltingSpeedBase * 4;
 					}
 				}
 			}
 		}
 		if (it->second->getJoint("HandRight")->pos.distance(it->second->getJoint("HandLeft")->pos) < touchingThreshold) {
-			if(it->second->hasSameColor)
-				it->second->meltingSpeed = ofGetLastFrameTime() * 0.4f;
+			if (it->second->hasSameColor)
+				it->second->meltingSpeed = ofGetLastFrameTime() * meltingSpeedBase * 4;
 			else
 				it->second->restoring = true;
 		}
@@ -241,7 +247,7 @@ void ofApp::parseMessage(ofxOscMessage amsg) {
 				skeletons[bodyId] = shared_ptr<Skeleton>(new Skeleton());
 				skeletons[bodyId]->build();
 			}
-			skeletons[bodyId]->addOrUpdateJoint(jointName, tpos, bSeen);
+			skeletons[bodyId]->addOrUpdateJoint(jointName, tpos, bSeen, imageScale, offsetX, offsetY);
 		}
 
 
@@ -302,7 +308,7 @@ void ofApp::updatePixels() {
 
 	for (auto it = skeletons.begin(); it != skeletons.end(); it++) {
 		for (auto line = it->second->sections.begin(); line != it->second->sections.end(); line++) {
-			float sectionWidth = 0.05f * it->second->scale * pow(line->second.percentLeft, 1 / 4.f);
+			float sectionWidth = 0.05f * it->second->scale * pow(line->second.percentLeft, 1 / 4.f) * bodyWidth;
 			if (line->first == "Spine") sectionWidth *= 2;
 			if (line->second.percentLeft < 0.95f) {
 				for (int i = 0; i < pixels.size(); i++) {
@@ -333,7 +339,7 @@ void ofApp::updatePixels() {
 
 	for (int i = 0; i<pixels.size(); i++) {
 		pixels[i].update();
-		if (pixels[i].isMelting && (int)(ofGetElapsedTimef()*10)%2==0 ) {
+		if (pixels[i].isMelting && (int)(ofGetElapsedTimef() * 10) % 2 == 0) {
 			drips.push_back(pixels[i].createDrip(pixels[i].color));
 		}
 		if (pixels[i].isRestoring) {
@@ -347,7 +353,7 @@ void Pixel::update() {
 	a -= 50;
 	if (a<0)a = 0;
 	/*if (isLitUp) {
-		a = 255;
+	a = 255;
 	}*/
 }
 
@@ -363,8 +369,8 @@ Drip Pixel::createDrip(ofColor c) {
 	return d;
 }
 
-void Drip::update() {
-	vel += ofGetLastFrameTime() * 8.f;
+void Drip::update(float speed) {
+	vel += ofGetLastFrameTime() * speed;
 	rect.position.y += vel;
 	a -= ofGetLastFrameTime() * 300;
 	if (a<0) {
@@ -480,10 +486,10 @@ void ofApp::keyPressed(int key) {
 	if (key == 'l') {
 		gui.loadFromFile("settings.xml");
 	}
-	if (key == 'r') {
+	if (key == 'f') {
 		for (auto it = skeletons.begin(); it != skeletons.end(); it++) {
-			for(auto section=it->second->sections.begin(); section!=it->second->sections.end();section++){
-			    section->second.percentLeft = 1.f;
+			for (auto section = it->second->sections.begin(); section != it->second->sections.end(); section++) {
+				section->second.percentLeft = 1.f;
 			}
 			it->second->restoring = true;
 		}
@@ -494,8 +500,18 @@ void ofApp::keyPressed(int key) {
 void ofApp::keyReleased(int key) {
 
 	if (key == 'r') {
-		for (auto it = skeletons.begin(); it != skeletons.end(); it++) {
-			it->second->restoring = false;
+		pixels.clear();
+		for (int i = 0; i<numRows; i++) {
+			for (int j = 0; j<numCols; j++) {
+				Pixel p;
+				ofRectangle r;
+				r.width = ofGetWidth() / numRows - 2;
+				r.height = ofGetHeight() / numCols - 2;
+				r.x = ofGetWidth() / numRows*i + 1;
+				r.y = ofGetHeight() / numCols*j + 1;
+				p.rect = r;
+				pixels.push_back(p);
+			}
 		}
 	}
 	if (key == 'c') {

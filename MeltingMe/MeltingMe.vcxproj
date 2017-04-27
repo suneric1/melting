@@ -255,6 +255,8 @@ C:\Users\suner\Downloads\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src\osc
     <ClInclude Include="..\..\..\..\..\Downloads\of_v0.9.8_vs_release\addons\ofxOsc\src\ofxOscParameterSync.h" />
     <ClInclude Include="..\..\..\..\..\Downloads\of_v0.9.8_vs_release\addons\ofxOsc\src\ofxOscReceiver.h" />
     <ClInclude Include="..\..\..\..\..\Downloads\of_v0.9.8_vs_release\addons\ofxOsc\src\ofxOscSender.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="resource1.h" />
     <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="src\Skeleton.h" />
   </ItemGroup>
@@ -264,11 +266,11 @@ C:\Users\suner\Downloads\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src\osc
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="icon.rc">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/D_DEBUG %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/D_DEBUG %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(OF_ROOT)\libs\openFrameworksCompiled\project\vs</AdditionalIncludeDirectories>
-    </ResourceCompile>
+    <Image Include="..\..\..\..\..\Desktop\favicon.ico" />
+    <Image Include="..\..\..\..\..\Desktop\meltingme.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MeltingMe.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ProjectExtensions>

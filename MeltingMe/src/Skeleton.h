@@ -79,7 +79,7 @@ public:
 	float scale = 0;
 	bool hasSameColor = false;
 
-	void addOrUpdateJoint(string jointName, ofVec3f position, bool seen);
+	void addOrUpdateJoint(string jointName, ofVec3f position, bool seen, float imageScale, int offsetX, int offsetY);
 
 	float firstTimeSeen = -1;
 	float lastTimeSeen = 0;

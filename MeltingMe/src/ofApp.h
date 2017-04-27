@@ -17,7 +17,7 @@ public:
 	int a = 255;
 	float vel = 0;
 	ofColor color = ofColor(255);
-	void update();
+	void update(float speed);
 	void draw();
 	bool bRemove = false;
 };
@@ -81,11 +81,20 @@ public:
 	bool bHide;
 	ofParameter<bool> bDebug;
 	ofParameter<bool> bRecording;
+	ofParameter<bool> bUseRecordedData;
 	ofParameter<bool> selfRestore;
 	ofParameter<int> dripCount;
 	ofParameter<int> fps;
+	ofParameter<float> bodyWidth;
 	ofParameter<float> lastft;
-	ofParameter<int> touchingThresholdBase = 10;
+	ofParameter<float> dropSpeed;
+	ofParameter<float> meltingSpeedBase;
+	ofParameter<float> numRows = 120;
+	ofParameter<float> numCols = 90;
+	ofParameter<float> touchingThresholdBase = 10;
+	ofParameter<float> imageScale;
+	ofParameter<int> offsetX;
+	ofParameter<int> offsetY;
 
 	ofxOscReceiver oscRX;
 

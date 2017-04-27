@@ -212,8 +212,14 @@
     <ClInclude Include="src\Skeleton.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="resource1.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="icon.rc" />
+    <Image Include="..\..\..\..\..\Desktop\meltingme.png" />
+    <Image Include="..\..\..\..\..\Desktop\favicon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MeltingMe.rc" />
   </ItemGroup>
 </Project>
